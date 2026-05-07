@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brookfield · MorningBrief Jurídico</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bk:      #1a3a6b;
+  --bk2:     #2453a0;
+  --bk3:     #3a6bbf;
+  --bk-pale: #eef3fb;
+  --gold:    #c8a84b;
+  --white:   #ffffff;
+  --ink:     #0f1923;
+  --text:    #2d3748;
+  --muted:   #718096;
+  --border:  #e2e8f0;
+  --border2: #c8d8ee;
+  --success: #276749;
+  --danger:  #9b1c1c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;font-weight:400;background:#f7f9fc;color:var(--text);min-height:100vh}
+
+/* SETUP */
+#setup{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:#f7f9fc}
+.setup-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:2.5rem 2rem;max-width:440px;width:100%;box-shadow:0 4px 24px rgba(26,58,107,.07)}
+.setup-logo{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--bk);margin-bottom:2px}
+.setup-logo b{color:var(--bk2)}
+.setup-eyebrow{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:1.75rem}
+.setup-label{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:5px;display:block}
+.setup-hint{font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.65}
+.setup-hint a{color:var(--bk2);text-decoration:none;font-weight:500}
+.setup-hint a:hover{text-decoration:underline}
+.setup-input{width:100%;background:var(--white);border:1.5px solid var(--border);color:var(--ink);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:10px 14px;border-radius:6px;outline:none;transition:border-color .2s}
+.setup-input:focus{border-color:var(--bk2);box-shadow:0 0 0 3px rgba(36,83,160,.1)}
+.setup-input::placeholder{color:#a0aec0}
+.setup-btn{width:100%;margin-top:1.25rem;padding:11px;background:var(--bk);color:var(--white);border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s}
+.setup-btn:hover{background:var(--bk2)}
+.setup-err{margin-top:.75rem;font-size:11px;color:var(--danger);display:none;font-family:'IBM Plex Mono',monospace;padding:8px 10px;background:#fef2f2;border-radius:4px}
+.setup-privacy{margin-top:1rem;font-size:10px;color:var(--muted);text-align:center;line-height:1.65}
+.setup-divider{height:1px;background:var(--border);margin:1.5rem 0}
+.setup-info{font-size:11px;color:var(--muted);line-height:1.7}
+.setup-info strong{color:var(--text);font-weight:500}
+
+/* APP */
+#app{display:none;min-height:100vh;flex-direction:column}
+
+.topbar{background:var(--bk);padding:.65rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.topbar-left{display:flex;align-items:center;gap:14px}
+.bk-stripe{width:3px;height:28px;background:var(--gold);border-radius:2px;flex-shrink:0}
+.topbar-brand{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);line-height:1}
+.topbar-brand span{color:var(--gold)}
+.topbar-sub{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:2px}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-date{font-size:11px;color:rgba(255,255,255,.55)}
+.logout-btn{background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.55);font-size:10px;padding:4px 10px;border-radius:4px;cursor:pointer;transition:all .15s}
+.logout-btn:hover{border-color:rgba(255,255,255,.5);color:var(--white)}
+
+.tabs-bar{background:var(--white);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.tabs{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{font-size:12px;font-weight:500;padding:14px 16px;cursor:pointer;color:var(--muted);border-bottom:2.5px solid transparent;transition:all .15s;white-space:nowrap;user-select:none}
+.tab:hover{color:var(--bk);background:var(--bk-pale)}
+.tab.on{color:var(--bk);border-bottom-color:var(--bk);font-weight:600}
+.tab-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--bk);color:var(--white);border-radius:99px;font-size:9px;font-weight:600;padding:1px 6px;margin-left:5px;min-width:18px;transition:background .2s}
+.tab.on .tab-badge{background:var(--bk3)}
+.run-btn{margin-left:auto;flex-shrink:0;padding:7px 18px;border-radius:6px;border:none;background:var(--bk);color:var(--white);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;transition:all .15s}
+.run-btn:hover{background:var(--bk2)}
+.run-btn:disabled{opacity:.4;cursor:not-allowed}
+.spin{width:12px;height:12px;border:2px solid rgba(255,255,255,.35);border-top-color:var(--white);border-radius:50%;animation:spin .6s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.content{flex:1;padding:1.5rem 2rem 4rem;max-width:1200px;width:100%;margin:0 auto}
+
+.log-box{background:var(--ink);border-radius:8px;padding:12px 16px;margin-bottom:1.25rem;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:2;display:none;max-height:120px;overflow-y:auto}
+.ll{display:block;color:#4a6180}
+.ll.act{color:var(--gold)}
+.ll.act::before{content:'▶ '}
+.ll.ok{color:#4ade80}
+.ll.ok::before{content:'✓ '}
+
+.err-box{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;font-size:11px;color:var(--danger);margin-bottom:1.25rem;display:none;font-family:'IBM Plex Mono',monospace;line-height:1.6}
+
+.summary{border-left:3px solid var(--bk);padding:14px 18px;margin-bottom:1.5rem;background:var(--bk-pale);border-radius:0 8px 8px 0;display:none}
+.sum-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--bk);margin-bottom:7px;font-weight:600}
+.sum-txt{font-family:'Playfair Display',serif;font-size:15px;line-height:1.7;color:var(--bk);font-style:italic}
+
+.status-row{font-size:11px;color:var(--muted);margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:6px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ALERTS */
+.alerts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-bottom:1.5rem}
+.alert-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;border-left:4px solid var(--bk)}
+.alert-card.urgent{border-left-color:#ef4444}
+.alert-card.warn{border-left-color:var(--gold)}
+.alert-card.ok{border-left-color:#22c55e}
+.alert-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.alert-title{font-size:13px;font-weight:600;color:var(--ink);line-height:1.3}
+.alert-pill{font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.alert-pill.urgent{background:#fef2f2;color:#991b1b}
+.alert-pill.warn{background:#fffbeb;color:#92400e}
+.alert-pill.ok{background:#f0fdf4;color:#166534}
+.alert-body{font-size:12px;color:var(--muted);line-height:1.65}
+.alert-date{font-size:10px;color:var(--bk2);margin-top:8px;font-weight:500;font-family:'IBM Plex Mono',monospace}
+
+/* NEWS */
+.news-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.25rem;transition:box-shadow .15s,border-color .15s;animation:fi .3s ease both}
+.card:hover{box-shadow:0 4px 16px rgba(26,58,107,.09);border-color:var(--border2)}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+.card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.ctag{font-size:9px;letter-spacing:.8px;text-transform:uppercase;padding:2px 8px;border-radius:4px;font-weight:600}
+.ctag-STJ  {background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}
+.ctag-STF  {background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.ctag-TJ   {background:#fefce8;color:#854d0e;border:1px solid #fde68a}
+.ctag-RE   {background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+.ctag-FII  {background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
+.ctag-CRI  {background:#f5f3ff;color:#5b21b6;border:1px solid #ddd6fe}
+.ctag-MA   {background:#fff1f2;color:#9f1239;border:1px solid #fecdd3}
+.ctag-JUR  {background:#f0f9ff;color:#0c4a6e;border:1px solid #bae6fd}
+.ctag-SOC  {background:#fafafa;color:#374151;border:1px solid #d1d5db}
+.ctag-TRIB {background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+.ctag-LOG  {background:#ecfdf5;color:#064e3b;border:1px solid #a7f3d0}
+.ctag-CORP {background:#faf5ff;color:#581c87;border:1px solid #e9d5ff}
+.ctag-HTL  {background:#fff5f7;color:#9d174d;border:1px solid #fbcfe8}
+.ctag-MF   {background:#f0f9ff;color:#155e75;border:1px solid #a5f3fc}
+
+.card-headline{font-family:'Playfair Display',serif;font-size:15px;font-weight:500;line-height:1.45;margin-bottom:8px;color:var(--ink)}
+.card-body{font-size:12px;line-height:1.7;color:var(--muted)}
+.card-rel{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--bk);line-height:1.55;font-weight:500}
+.card-rel::before{content:'↳ ';opacity:.5}
+.card-src{margin-top:5px;font-size:9px;color:#a0aec0;letter-spacing:.5px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace}
+
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:260px;gap:14px;color:var(--muted);text-align:center;padding:2rem}
+.empty-icon{font-size:42px;opacity:.18}
+.empty-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--muted);font-style:italic}
+.empty-sub{font-size:12px;line-height:1.7;max-width:360px}
+
+.section-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:1.5rem 0 .75rem}
+
+.footer{background:var(--white);border-top:1px solid var(--border);padding:.85rem 2rem;font-size:10px;color:var(--muted);display:flex;justify-content:space-between}
+
+@media(max-width:700px){
+  .topbar{padding:.75rem 1rem}
+  .tabs-bar{padding:0 1rem}
+  .content{padding:1rem 1rem 3rem}
+  .news-grid{grid-template-columns:1fr}
+  .alerts-grid{grid-template-columns:1fr}
+  .topbar-date{display:none}
+  .run-btn{padding:7px 12px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup">
+  <div class="setup-card">
+    <div class="setup-logo">Morning<b>Brief</b></div>
+    <div class="setup-eyebrow">Brookfield · Jurídico de Investimentos</div>
+    <label class="setup-label">Chave de API Anthropic</label>
+    <div class="setup-hint">
+      Crie sua chave em <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>.<br>
+      Salva <strong>apenas no seu navegador</strong> — nunca enviada a terceiros.
+    </div>
+    <input class="setup-input" id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." autocomplete="off"/>
+    <div class="setup-err" id="setupErr"></div>
+    <button class="setup-btn" onclick="saveKey()">Acessar Briefing →</button>
+    <div class="setup-privacy">🔒 Armazenada localmente · Nunca compartilhada</div>
+    <div class="setup-divider"></div>
+    <div class="setup-info">
+      <strong>O que você encontra aqui:</strong><br>
+      Jurisprudência STJ, STF e TJs consolidada; notícias de mercado imobiliário (incluindo multifamily e hotéis); FIIs, CRI, M&A; regulação CVM; e agenda societária automática com prazos do mês.
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="bk-stripe"></div>
+      <div>
+        <div class="topbar-brand">Morning<span>Brief</span></div>
+        <div class="topbar-sub">Brookfield Asset Management · Jurídico de Investimentos</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-date" id="dateEl"></div>
+      <button class="logout-btn" onclick="logout()">Trocar chave</button>
+    </div>
+  </div>
+
+  <div class="tabs-bar">
+    <div class="tabs" id="tabs">
+      <div class="tab on"  data-tab="all">Todas</div>
+      <div class="tab" data-tab="juris">Jurisprudência <span class="tab-badge" id="badge-juris">—</span></div>
+      <div class="tab" data-tab="imob">Mercado Imobiliário <span class="tab-badge" id="badge-imob">—</span></div>
+      <div class="tab" data-tab="capital">Mercado de Capitais <span class="tab-badge" id="badge-capital">—</span></div>
+      <div class="tab" data-tab="reg">Regulatório <span class="tab-badge" id="badge-reg">—</span></div>
+      <div class="tab" data-tab="soc">Societário &amp; Agenda <span class="tab-badge" id="badge-soc" style="background:#ef4444">!</span></div>
+    </div>
+    <button class="run-btn" id="runBtn" onclick="go()">
+      <div class="spin" id="spin"></div>
+      <span id="btnLbl">▶ Gerar Briefing</span>
+    </button>
+  </div>
+
+  <div class="content">
+    <div class="log-box" id="logBox"></div>
+    <div class="err-box" id="errBox"></div>
+    <div class="summary" id="sumBox">
+      <div class="sum-lbl">◆ Panorama jurídico do dia</div>
+      <div class="sum-txt" id="sumTxt"></div>
+    </div>
+    <div class="status-row" id="statusRow"><span></span><span id="cntLbl"></span></div>
+    <div id="area">
+      <div class="empty">
+        <div class="empty-icon">⚖</div>
+        <div class="empty-title">Seu briefing jurídico está aguardando</div>
+        <div class="empty-sub">Clique em "Gerar Briefing" para buscar jurisprudência, notícias imobiliárias e obrigações societárias do mês.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Gerado por IA · Verifique as fontes antes de tomar decisões</span>
+    <span id="genTime"></span>
+  </div>
+</div>
+
+<script>
+const KEY = 'bk_apikey_v2';
+
+function saveKey() {
+  const v = document.getElementById('apiKeyInput').value.trim();
+  const err = document.getElementById('setupErr');
+  if (!v.startsWith('sk-ant-')) {
+    err.textContent='Chave inválida. Deve começar com sk-ant-'; err.style.display='block'; return;
+  }
+  localStorage.setItem(KEY, v); showApp();
+}
+function logout() {
+  localStorage.removeItem(KEY);
+  document.getElementById('app').style.display='none';
+  document.getElementById('setup').style.display='flex';
+  document.getElementById('apiKeyInput').value='';
+}
+function showApp() {
+  document.getElementById('setup').style.display='none';
+  document.getElementById('app').style.display='flex';
+}
+window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem(KEY)) showApp();
+  document.getElementById('dateEl').textContent =
+    new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+});
+
+let activeTab='all', allNews=[], alerts=[];
+
+document.getElementById('tabs').addEventListener('click', e => {
+  const t = e.target.closest('.tab'); if(!t) return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on'); activeTab=t.dataset.tab; render();
+});
+
+function addLog(msg, state='act') {
+  const el=document.getElementById('logBox');
+  el.style.display='block';
+  const prev=el.querySelector('.ll.act');
+  if(prev){prev.classList.remove('act');prev.classList.add('ok');}
+  const s=document.createElement('span'); s.className='ll '+state; s.textContent=msg;
+  el.appendChild(s); el.scrollTop=el.scrollHeight;
+}
+
+async function callAPI(messages) {
+  const r = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key': localStorage.getItem(KEY),
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body: JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:5000,
+      tools:[{type:'web_search_20250305',name:'web_search'}],
+      messages
+    })
+  });
+  const d = await r.json();
+  if(!r.ok) throw new Error(d.error?.message||`Erro HTTP ${r.status}`);
+  return d;
+}
+
+function generateAlerts() {
+  const now=new Date(), m=now.getMonth(), d=now.getDate(), y=now.getFullYear();
+  const lastDay = new Date(y,m+1,0).getDate();
+  const fmt = (day,mon) => `${String(day).padStart(2,'0')}/${String(mon+1).padStart(2,'0')}`;
+
+  const all = [
+    // ABRIL (3)
+    {months:[3],deadline:'30/04',title:'AGO – Aprovação de Contas (SAs e FIIs/FIPs)',body:'Prazo final para realização da Assembleia Geral Ordinária nas SAs (Lei 6.404/76, art. 132) e Assembleias de Cotistas nos FIIs e FIPs para aprovação das demonstrações financeiras do exercício anterior e eleição/reeleição de administradores.',severity:d>=20?'urgent':'warn',tag:'SOC'},
+    {months:[3],deadline:'30/04',title:'Informe de Rendimentos – FIIs',body:'FIIs devem disponibilizar o informe de rendimentos para cotistas até 30/04 (ICVM 571). Verificar adimplência dos fundos geridos.',severity:d>=20?'urgent':'warn',tag:'SOC'},
+    {months:[3],deadline:'30/04',title:'Ata de AGO – Arquivamento e Publicação',body:'Após realização da AGO, verificar prazo para arquivamento da ata no Registro de Empresas (JUCEP) e publicação no Diário Oficial (SAs de capital aberto). SAs fechadas: ata em cartório dentro de 30 dias.',severity:d>=25?'urgent':'ok',tag:'SOC'},
+
+    // MARÇO (2)
+    {months:[2],deadline:'31/03',title:'Demonstrações Financeiras – Publicação Obrigatória',body:'SAs de capital aberto e fechadas com ativo superior a R$ 240 mi ou mais de 300 acionistas devem publicar DFs até 31/03. Verificar SPEs do portfolio.',severity:d>=20?'urgent':'warn',tag:'SOC'},
+    {months:[2],deadline:'31/03',title:'DIRF – Entrega à Receita Federal',body:'Declaração do Imposto de Renda Retido na Fonte relativa ao exercício anterior. Verificar retenções sobre rendimentos de CRI, debêntures e dividendos distribuídos pelas SPEs.',severity:d>=20?'urgent':'warn',tag:'SOC'},
+
+    // JUNHO (5)
+    {months:[5],deadline:'30/06',title:'Relatório Anual – FIIs (ICVM 571)',body:'FIIs devem entregar relatório anual completo à CVM até 30/06, com demonstrações financeiras auditadas, laudo de avaliação dos imóveis e parecer do auditor independente.',severity:d>=20?'urgent':'warn',tag:'SOC'},
+    {months:[5],deadline:'30/06',title:'Assembleia Semestral – FIPs (ICVM 578)',body:'Verificar obrigação de realização de reunião semestral de cotistas nos FIPs do portfolio, conforme regulamentos específicos de cada fundo.',severity:'ok',tag:'SOC'},
+
+    // SETEMBRO (8)
+    {months:[8],deadline:'30/09',title:'ITR – Imposto Territorial Rural',body:'Entrega da declaração do ITR sobre imóveis rurais. Atenção a ativos em área de expansão urbana com classificação rural — risco de autuação. Verificar laudos de ITR dos ativos do portfolio.',severity:d>=20?'urgent':'warn',tag:'SOC'},
+
+    // DEZEMBRO (11)
+    {months:[11],deadline:'31/12',title:'Reunião de Cotistas – FIPs (Orçamento)',body:'FIPs devem realizar reunião de cotistas até 31/12 para aprovação do orçamento do exercício seguinte, conforme ICVM 578 e regulamentos.',severity:d>=15?'urgent':'ok',tag:'SOC'},
+    {months:[11],deadline:'31/12',title:'Renovação de Apólices de Seguro – Ativos Imobiliários',body:'Verificar vencimento de apólices de seguro dos imóveis do portfolio (incêndio, responsabilidade civil, riscos de engenharia). Obrigação usual em contratos de locação e de financiamento imobiliário.',severity:'warn',tag:'SOC'},
+
+    // TODO MÊS
+    {months:[0,1,2,3,4,5,6,7,8,9,10,11],deadline:`15 dias úteis após ${fmt(lastDay,m)}`,title:'Informe Mensal – FIIs (ICVM 571)',body:'FIIs devem entregar Informe Mensal à CVM até o 15º dia útil após encerramento de cada mês. Verificar adimplência dos fundos geridos. Atraso gera multa automática.',severity:d>=10?'warn':'ok',tag:'SOC'},
+    {months:[0,1,2,3,4,5,6,7,8,9,10,11],deadline:`Até dia 15 de ${new Date(y,m+1,1).toLocaleDateString('pt-BR',{month:'long'})}`,title:'DCTF e Obrigações Fiscais Mensais – SPEs',body:'Verificar entrega da DCTF, DARF de IRPJ/CSLL (estimativas mensais), PIS/COFINS e eventuais DOIs (Declaração de Operações Imobiliárias) decorrentes de transações do mês.',severity:'ok',tag:'SOC'},
+    {months:[0,1,2,3,4,5,6,7,8,9,10,11],deadline:'Conforme regulamento de cada fundo',title:'Distribuição de Rendimentos – FIIs',body:'FIIs são obrigados a distribuir no mínimo 95% do resultado auferido semestralmente. Verificar política de distribuição mensal dos FIIs geridos e adimplência com regulamentos.',severity:'ok',tag:'SOC'},
+  ];
+  return all.filter(a=>a.months.includes(m));
+}
+
+async function go() {
+  const btn=document.getElementById('runBtn'), spin=document.getElementById('spin'),
+        lbl=document.getElementById('btnLbl'), errBox=document.getElementById('errBox'),
+        logBox=document.getElementById('logBox');
+  btn.disabled=true; spin.style.display='block'; lbl.textContent='Buscando...';
+  errBox.style.display='none'; logBox.innerHTML='';
+  document.getElementById('sumBox').style.display='none';
+  document.getElementById('area').innerHTML=`<div class="empty"><div class="empty-icon" style="animation:spin 2s linear infinite;display:inline-block">⚖</div><div class="empty-title">Consultando fontes...</div><div class="empty-sub">Buscando jurisprudência, notícias e atualizações regulatórias.</div></div>`;
+
+  alerts = generateAlerts();
+  document.getElementById('badge-soc').textContent = alerts.filter(a=>a.severity==='urgent').length || alerts.length;
+
+  const today = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  const prompt = `Hoje é ${today}. Você é analista sênior do jurídico de investimentos imobiliários da Brookfield Asset Management Brasil.
+
+CONTEXTO OPERACIONAL:
+- Compra/venda de imóveis, SPEs (quotas/ações) e cotas de fundos
+- Financiamentos: debêntures imobiliárias, CRI, notas comerciais, cotas subordinadas e sênior
+- Controle societário; gestão de FIPs e FIIs
+- Segmentos: residencial, multifamily (locação residencial institucional), lajes corporativas, galpões logísticos, shoppings/varejo, hotéis e hotelaria
+
+Use web search para buscar notícias e decisões de HOJE ou dos últimos 3 dias. Faça múltiplas buscas específicas por tema.
+
+JURISPRUDÊNCIA (prioridade máxima — busque ativamente):
+- STJ: REsp, AgRg, EAREsp sobre alienação fiduciária de imóveis, consolidação da propriedade, purgação da mora, incorporação imobiliária (Lei 4.591), patrimônio de afetação, contratos de compra e venda, adjudicação compulsória, distrato imobiliário, vícios construtivos, locação comercial e residencial (Lei 8.245), financiamento imobiliário SFH/SFI, SPE, cessão de recebíveis
+- STF: RE com repercussão geral, ADI sobre ITBI (fato gerador na cessão de direitos), ITCMD em transmissão de cotas de fundos, imunidade tributária de FIIs, tributação de CRI e LCI, imunidade de templos e entidades sem fins lucrativos em imóveis
+- TJs (TJSP, TJRJ, TJMG, TJPR e outros): jurisprudência consolidada em direito imobiliário, locação, incorporação, condomínio edilício, usucapião, regularização fundiária, ações revisionais de aluguel, despejo, resolução de contratos imobiliários
+- Destaque para teses repetitivas e recursos repetitivos com impacto em larga escala
+
+MERCADO IMOBILIÁRIO (buscar por segmento):
+- Transações de grande porte: venda de lajes corporativas, galpões logísticos, shoppings, hotéis, ativos residenciais e multifamily
+- Multifamily / Built-to-Rent: novos projetos, captações, tendências do mercado de locação residencial institucional no Brasil
+- Hotelaria: grandes transações, aquisições de redes, projetos de conversão, financiamentos de ativos hoteleiros
+- M&A imobiliário: aquisições de SPEs, portfólios de imóveis, fusões de gestoras de FIIs
+- Incorporação: grandes lançamentos, tendências, INCC, impacto de juros na demanda
+
+MERCADO DE CAPITAIS IMOBILIÁRIOS:
+- FIIs: novas emissões de cotas (ICVM 400 e 476), captações, rendimentos, consultas públicas CVM, decisões de colegiado
+- FIPs imobiliários: estruturações, captações, regulação
+- CRI: novas emissões, estruturas inovadoras (CRI de multifamily, hotelaria), inadimplências relevantes, spreads
+- Debêntures imobiliárias e notas comerciais: emissões relevantes
+- LCI, LIG: captações, regulação
+
+REGULATÓRIO E LEGISLATIVO:
+- CVM: instruções, ofícios-circulares, deliberações sobre FIIs, FIPs, securitização imobiliária
+- Banco Central: normas SFH, SFI, crédito imobiliário, LCI
+- Legislação: projetos de lei relevantes (marco legal de garantias, registro de imóveis, regularização fundiária, retrofit)
+- ANPD: proteção de dados em operações imobiliárias
+
+Retorne APENAS JSON sem markdown nem backticks:
+{
+  "summary": "2-3 frases resumindo o panorama jurídico-imobiliário do dia",
+  "items": [
+    {
+      "headline": "Título objetivo até 12 palavras",
+      "body": "2-3 frases factuais com dados concretos (número do processo, tribunal, data se disponível)",
+      "relevance": "Impacto direto para operações jurídicas da Brookfield — seja específico (1-2 frases)",
+      "tags": ["TAG1"],
+      "source": "Fonte"
+    }
+  ]
+}
+
+Tags disponíveis: STJ, STF, TJ, RE (Real Estate geral), FII, CRI, MA (M&A), JUR (Regulatório), SOC (Societário), TRIB (Tributário), LOG (Galpões), CORP (Lajes), HTL (Hotelaria), MF (Multifamily).
+Mínimo 10 itens. Priorize fortemente jurisprudência e aspectos jurídicos. Fontes: JOTA, Migalhas, Conjur, Valor Econômico, Pipeline Valor, InfoMoney, Broadcast, NuInvest/XP Research.`;
+
+  try {
+    addLog('Iniciando busca de jurisprudência e notícias...');
+    let msgs=[{role:'user',content:prompt}], final=null;
+
+    for(let i=0;i<15;i++){
+      const d = await callAPI(msgs);
+      msgs.push({role:'assistant',content:d.content});
+      if(d.stop_reason==='end_turn'){final=d.content;break;}
+      const tools=d.content.filter(b=>b.type==='tool_use');
+      if(!tools.length){final=d.content;break;}
+      const results=tools.map(b=>{
+        if(b.name==='web_search') addLog(`Buscando: "${b.input.query}"`);
+        return{type:'tool_result',tool_use_id:b.id,content:'Search completed, results in context.'};
+      });
+      msgs.push({role:'user',content:results});
+    }
+
+    if(!final) throw new Error('Não foi possível obter resposta final da API.');
+    addLog('Formatando resultados...');
+
+    let raw=final.filter(b=>b.type==='text').map(b=>b.text).join('')
+      .replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
+
+    let parsed;
+    try{parsed=JSON.parse(raw);}
+    catch{
+      const m=raw.match(/\{[\s\S]*\}/);
+      if(m) parsed=JSON.parse(m[0]);
+      else throw new Error('JSON inválido na resposta. Tente novamente.');
+    }
+
+    const last=logBox.querySelector('.ll.act');
+    if(last){last.classList.remove('act');last.classList.add('ok');}
+
+    allNews=parsed.items||[];
+
+    updateBadge('juris', allNews.filter(n=>n.tags?.some(t=>['STJ','STF','TJ'].includes(t))).length);
+    updateBadge('imob',  allNews.filter(n=>n.tags?.some(t=>['RE','MA','LOG','CORP','HTL','MF'].includes(t))).length);
+    updateBadge('capital',allNews.filter(n=>n.tags?.some(t=>['FII','CRI'].includes(t))).length);
+    updateBadge('reg',   allNews.filter(n=>n.tags?.some(t=>['JUR','TRIB'].includes(t))).length);
+
+    if(parsed.summary){
+      document.getElementById('sumTxt').textContent=parsed.summary;
+      document.getElementById('sumBox').style.display='block';
+    }
+    render();
+
+    const t=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('statusRow').innerHTML=`<span><span class="status-dot"></span>Atualizado às ${t}</span><span id="cntLbl">${allNews.length} itens encontrados</span>`;
+    document.getElementById('genTime').textContent=`Gerado às ${t}`;
+    setTimeout(()=>{logBox.style.display='none';},2500);
+
+  }catch(e){
+    errBox.textContent=`Erro: ${e.message}`;
+    errBox.style.display='block';
+    document.getElementById('area').innerHTML=`<div class="empty"><div class="empty-icon">⚠</div><div class="empty-title">Não foi possível carregar</div><div class="empty-sub">${e.message}</div></div>`;
+    const la=logBox.querySelector('.ll.act'); if(la) la.style.color='#ef4444';
+  }finally{
+    btn.disabled=false; spin.style.display='none'; lbl.textContent='↺ Atualizar';
+  }
+}
+
+function updateBadge(tab, count) {
+  const el=document.getElementById('badge-'+tab);
+  if(el) el.textContent=count||'—';
+}
+
+function render() {
+  const area=document.getElementById('area');
+  if(activeTab==='soc'){renderSocietario(area);return;}
+
+  let filtered;
+  switch(activeTab){
+    case 'juris':    filtered=allNews.filter(n=>n.tags?.some(t=>['STJ','STF','TJ'].includes(t)));break;
+    case 'imob':     filtered=allNews.filter(n=>n.tags?.some(t=>['RE','MA','LOG','CORP','HTL','MF'].includes(t)));break;
+    case 'capital':  filtered=allNews.filter(n=>n.tags?.some(t=>['FII','CRI'].includes(t)));break;
+    case 'reg':      filtered=allNews.filter(n=>n.tags?.some(t=>['JUR','TRIB','SOC'].includes(t)));break;
+    default:         filtered=allNews;
+  }
+
+  if(!allNews.length){
+    area.innerHTML=`<div class="empty"><div class="empty-icon">⚖</div><div class="empty-title">Seu briefing está aguardando</div><div class="empty-sub">Clique em "Gerar Briefing" para buscar jurisprudência, notícias e obrigações do mês.</div></div>`;
+    return;
+  }
+  if(!filtered.length){
+    area.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">Nenhum item nesta categoria</div><div class="empty-sub">Tente outra aba ou gere um novo briefing.</div></div>`;
+    return;
+  }
+
+  const g=document.createElement('div'); g.className='news-grid';
+  filtered.forEach((item,i)=>{
+    const el=document.createElement('div'); el.className='card'; el.style.animationDelay=`${i*.04}s`;
+    el.innerHTML=`
+      <div class="card-tags">${(item.tags||[]).map(t=>`<span class="ctag ctag-${t}">${t}</span>`).join('')}</div>
+      <div class="card-headline">${item.headline||''}</div>
+      <div class="card-body">${item.body||''}</div>
+      <div class="card-rel">${item.relevance||''}</div>
+      <div class="card-src">${item.source||''}</div>`;
+    g.appendChild(el);
+  });
+  area.innerHTML=''; area.appendChild(g);
+}
+
+function renderSocietario(area) {
+  const sorted=[...alerts].sort((a,b)=>({urgent:0,warn:1,ok:2}[a.severity]-({urgent:0,warn:1,ok:2}[b.severity])));
+  let html=`<div style="margin-bottom:1.25rem"><div style="font-size:12px;color:var(--text);line-height:1.65;background:var(--bk-pale);padding:14px 18px;border-radius:8px;border:1px solid var(--border2)">
+    <strong style="color:var(--bk)">📌 Agenda Societária — ${new Date().toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}</strong><br>
+    <span style="color:var(--muted)">Obrigações legais para SAs, FIIs, FIPs e SPEs do portfolio. Verifique datas exatas nos instrumentos de cada entidade.</span>
+  </div></div><div class="alerts-grid">`;
+  sorted.forEach(a=>{
+    const label=a.severity==='urgent'?'URGENTE':a.severity==='warn'?'ATENÇÃO':'OK';
+    html+=`<div class="alert-card ${a.severity}">
+      <div class="alert-head"><div class="alert-title">${a.title}</div><span class="alert-pill ${a.severity}">${label}</span></div>
+      <div class="alert-body">${a.body}</div>
+      <div class="alert-date">⏰ ${a.deadline}</div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  const socNews=allNews.filter(n=>n.tags?.some(t=>['SOC','JUR','TRIB'].includes(t)));
+  if(socNews.length){
+    html+=`<div class="section-label">Notícias regulatórias relacionadas</div><div class="news-grid">`;
+    socNews.forEach((item,i)=>{
+      html+=`<div class="card" style="animation-delay:${i*.04}s">
+        <div class="card-tags">${(item.tags||[]).map(t=>`<span class="ctag ctag-${t}">${t}</span>`).join('')}</div>
+        <div class="card-headline">${item.headline||''}</div>
+        <div class="card-body">${item.body||''}</div>
+        <div class="card-rel">${item.relevance||''}</div>
+        <div class="card-src">${item.source||''}</div></div>`;
+    });
+    html+=`</div>`;
+  }
+  area.innerHTML=html;
+}
+</script>
+</body>
+</html>
